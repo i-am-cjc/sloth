@@ -1,8 +1,13 @@
 mkdir .tmp
 mkdir files
 
-echo "[+] Getting newest Wordpress plugins list..."
-wget -q https://wordpress.org/plugins/browse/new/ -O .tmp/list.html
+if [ -z "$1" ]; then
+	echo "[+] Getting newest Wordpress plugins list..."
+	wget -q https://wordpress.org/plugins/browse/new/ -O .tmp/list.html
+else
+	echo "[+] Gettings Wordpress plugin results for $1..."
+	wget -q https://wordpress.org/plugins/search.php?q=$1 -O .tmp/list.html
+fi
 
 for URL in $(cat .tmp/list.html | grep "plugin-icon" | cut -d "\"" -f 2); do
 	PLUGIN=$(echo $URL | cut -d "/" -f 5)
