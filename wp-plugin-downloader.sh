@@ -34,8 +34,8 @@ echo "[+] Generating reports"
 cd files
 for PLUGIN in $(ls); do
 	cd $PLUGIN
-	grep -R "\$_REQUEST" * > REPORT
-	grep -R "\$_POST" * >> REPORT
-	grep -R "\$_GET" * >> REPORT
+	grep --exclude=REPORT -R "\$_REQUEST" * > REPORT
+	grep --exclude=REPORT -R "\$_POST" * >> REPORT
+	grep --exclude=REPORT -R "\$_GET" * >> REPORT
 	cd ..
 done
