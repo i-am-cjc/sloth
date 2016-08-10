@@ -1,3 +1,4 @@
+#!/bin/bash
 mkdir .tmp
 mkdir files
 
@@ -42,4 +43,18 @@ for PLUGIN in $(ls); do
 	grep --exclude=REPORT -R "\$_POST" * >> REPORT
 	grep --exclude=REPORT -R "\$_GET" * >> REPORT
 	cd ..
+done
+
+for PLUGIN in $(ls); do
+    echo "------------------------------------------------------------------------------"
+    echo "[+] REPORT For $PLUGIN"
+    cat $PLUGIN/REPORT
+    echo "[?] Keep $PLUGIN?"
+    select yn in Yes No
+    do
+        case $yn in
+            Yes ) echo "[+] Kept $PLUGIN"; break;;
+            No ) rm -rf $PLUGIN; echo "[!] Deleted $PLUGIN"; break;;
+        esac
+    done
 done
