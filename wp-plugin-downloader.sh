@@ -1,6 +1,7 @@
 #!/bin/bash
-mkdir .tmp
-mkdir files
+mkdir -p .tmp
+mkdir -p files
+mkdir -p plugins
 
 if [ -z "$1" ]; then
 	echo "[+] Getting newest Wordpress plugins list..."
@@ -53,8 +54,11 @@ for PLUGIN in $(ls); do
     select yn in Yes No
     do
         case $yn in
-            Yes ) echo "[+] Kept $PLUGIN"; break;;
+            Yes ) echo "[+] Kept $PLUGIN"; mv $PLUGIN ../plugins; break;;
             No ) rm -rf $PLUGIN; echo "[!] Deleted $PLUGIN"; break;;
         esac
     done
 done
+
+cd ..
+rm -rf files
