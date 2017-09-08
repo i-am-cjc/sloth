@@ -11,14 +11,14 @@ else
 	wget -q https://wordpress.org/plugins/search.php?q=$1 -O .tmp/list.html
 fi
 
-for URL in $(cat .tmp/list.html | grep "plugin-icon" | cut -d "\"" -f 2); do
+for URL in $(grep entry-title .tmp/list.html | cut -d"\"" -f4); do
 	PLUGIN=$(echo $URL | cut -d "/" -f 5)
     if grep -q $PLUGIN .list; then
         echo "[!] Already seen $PLUGIN not downloading"
     else
         echo "[+] Downloading $PLUGIN..."
         wget -q $URL -O .tmp/$PLUGIN.html
-        DL=$(cat .tmp/$PLUGIN.html | grep "downloadUrl" | cut -d "'" -f 4)
+        DL=$(grep plugin-download .tmp/$PLUGIN.html | cut -d"\"" -f4)
         wget -q $DL -O files/$PLUGIN.zip
         echo $PLUGIN >> .list
     fi
