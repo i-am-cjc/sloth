@@ -2,6 +2,7 @@
 mkdir -p .tmp
 mkdir -p files
 mkdir -p plugins
+mkdir -p archive
 
 if [ -z "$1" ]; then
 	echo "[+] Getting newest Wordpress plugins list..."
@@ -27,14 +28,15 @@ done
 cd files
 
 echo "[+] Extracting any files"
-for FILE in $(ls); do
+for FILE in $(ls *.zip); do
 	unzip $FILE > /dev/null 2>&1
 done
 cd ..
 
 echo "[+] Cleaning up"
 rm -rf .tmp > /dev/null 2>&1
-rm files/*.zip > /dev/null 2>&1
+mv files/*.zip archive > /dev/null 2>&1
+rm -rf files/* > /dev/null 2>&1
 
 echo "[+] Generating reports"
 cd files
@@ -61,4 +63,26 @@ for PLUGIN in $(ls); do
 done
 
 cd ..
-rm -rf files
+
+echo "[?] Spin up Wordpress?"
+select yn in Yes No
+do
+	case $yn in
+		Yes ) 
+			echo "[+] Starting containers @ http://localhost:1337/"
+			docker-compose up -d
+			echo "[+] Hit enter when setup is done"
+			read $sloth
+			for PLUGIN in $(ls plugins); do
+				echo "[+] Copying $PLUGIN to container"
+				docker cp plugins/$plugin/ sloth_wordpress_1:/var/www/html/wp-content/plugins/
+			done
+			echo "[+] Plugins copied, press enter to kill containers"
+			read $sloth
+			docker-compose stop
+			docker-compose rm
+			break;;
+		No )
+			break;;
+	esac
+done
